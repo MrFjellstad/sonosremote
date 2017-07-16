@@ -1,0 +1,18 @@
+{
+  "name": "sonosremote",
+  "version": "1.0.0",
+  "description": "Start Sonos from Dropbox. Geofencing and IFTTT.",
+  "main": "bin/index.js",
+  "scripts": {
+    "start": "node bin/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kent Fjellstad",
+  "license": "ISC",
+  "dependencies": {
+    "convict": "^4.0.0",
+    "dropbox": "^2.5.4",
+    "node-schedule": "^1.2.3",
+    "sonos": "^0.15.0"
+  }
+}

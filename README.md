@@ -8,7 +8,7 @@ It works as a replacement for the python script and Dropbox installation needed 
 ## Setup
 Needs a Dropbox accesstoken that you can find [here](https://blogs.dropbox.com/developers/2014/05/generate-an-access-token-for-your-own-account/)
 
-Just drop it in the production.json aor development.json file as
+Just drop it in the production.json or development.json file as
 ```javascript
 {
     "accesstoken": "YourTokenGoesHere"

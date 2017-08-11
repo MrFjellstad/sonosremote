@@ -2,10 +2,9 @@ const cron = require('node-schedule');
 const Dropbox = require('dropbox');
 const sonos = require('sonos');
 const bunyan = require('bunyan');
-const log = bunyan.createLogger({name: 'SonosRemote'});
-
 const config = require('./config');
 
+const log = bunyan.createLogger({ name: 'SonosRemote' });
 const dbx = new Dropbox({ accessToken: config.get('accesstoken') });
 
 const schedule = cron.scheduleJob(config.get('schedule'), () => {

@@ -1,7 +1,7 @@
 # sonosremote
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/MrFjellstad/sonosremote.svg)](https://greenkeeper.io/)
-[Travis badge](https://travis-ci.org/MrFjellstad/sonosremote.svg?branch=master)
+![Travis badge](https://travis-ci.org/MrFjellstad/sonosremote.svg?branch=master)
 
 Start the Sonos player when you arrive at home.
 

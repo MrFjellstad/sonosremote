@@ -31,7 +31,7 @@ const schedule = cron.scheduleJob(config.get('schedule'), () => {
                     dbx.filesDelete(fileFullPath);
                 });
             } else {
-                log.info('Nothing here');
+                log.info('No files in folder');
             }
         })
         .catch((error) => {

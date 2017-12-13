@@ -31,64 +31,46 @@ function startPlaying(device) {
     });
 }
 
-const sonosSearch = sonos.search();
+function clearDropboxFolder(response) {
+    response.entries.forEach((element) => {
+        log.info(element.name);
+        const fileFullPath = {
+            path: `${config.get('dropboxPath')}/${element.name}`,
+        };
+        dbx.filesDelete(fileFullPath);
+    });
+}
 
-sonosSearch.on('DeviceAvailable', (device, model) => {
-    log.info('DeviceListener');
-    log.info(device);
-    log.info(model);
+const sonosSearch = sonos.search();
+const deviceList = [];
+
+sonosSearch.on('DeviceAvailable', (device) => {
+    deviceDescription(device)
+        .then((deviceInfo) => {
+            const activeRoom = config.get('room');
+            log.info(`Found ${deviceInfo.roomName}`);
+            if (activeRoom === 'any' || activeRoom === deviceInfo.roomName) {
+                deviceList.push(device);
+            }
+        });
 });
 
+// TODO: Check for play or pause as the filenames so that the player will start or pause correctly.
 const schedule = cron.scheduleJob(config.get('schedule'), () => {
     dbx.filesListFolder({ path: config.get('dropboxPath') })
         .then((response) => {
             if (response.entries.length > 0) {
-                const search = sonos.search((device, model) => {
-                    log.info(model);
-                    log.info(device);
-
-                    if (config.get('room') === 'any') {
-                        search.destroy(() => {
-                            log.info('Stopped searching for Sonos device');
-                        });
-                        startPlaying(device)
-                            .then((info) => {
-                                log.info(info);
-                            })
-                            .catch((err) => {
-                                log.error(err);
-                            });
-                    } else {
-                        deviceDescription(device)
-                            .then((info) => {
-                                if (info.roomName === config.get('room')) {
-                                    search.destroy((searchResponse) => {
-                                        log.info('Stopped searching for Sonos device');
-                                        log.info(searchResponse);
-                                    });
-                                    startPlaying(device)
-                                        .then((playingInfo) => {
-                                            log.info(playingInfo);
-                                        })
-                                        .catch((err) => {
-                                            log.error(err);
-                                        });
-                                }
-                            });
-                    }
-
-                    deviceDescription(device)
+                deviceList.forEach((device) => {
+                    startPlaying(device)
                         .then((info) => {
-                            log.info(info.roomName);
+                            log.info(info);
+                        })
+                        .catch((err) => {
+                            log.error(err);
                         });
                 });
-                response.entries.forEach((element) => {
-                    log.info(element.name);
-                    const fileFullPath = {
-                        path: `${config.get('dropboxPath')}/${element.name}`,
-                    };
-                    dbx.filesDelete(fileFullPath);
-                });
+
+                clearDropboxFolder(response);
             } else {
                 log.info('No files in folder');
             }
@@ -97,4 +79,26 @@ const schedule = cron.scheduleJob(config.get('schedule'), () => {
             log.warn(error.error);
             schedule.cancel();
         });
+});
+
+process.on('SIGINT', () => {
+    log.info('Gracefully shutting down from SIGINT (Ctrl-C)');
+
+    sonosSearch.destroy((searchResponse) => {
+        log.info('Stopped searching for Sonos device');
+        log.info(searchResponse);
+    });
+    schedule.cancel();
+    process.exit();
+});
+
+process.on('SIGTERM', () => {
+    log.info('Gracefully shutting down from SIGTERM');
+
+    sonosSearch.destroy((searchResponse) => {
+        log.info('Stopped searching for Sonos device');
+        log.info(searchResponse);
+    });
+    schedule.cancel();
+    process.exit();
 });

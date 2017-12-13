@@ -19,7 +19,7 @@ function deviceDescription(device) {
     });
 }
 
-function startPlaying(device) {
+function startPlayer(device) {
     return new Promise((resolve, reject) => {
         device.play((err, info) => {
             if (err) {
@@ -31,14 +31,38 @@ function startPlaying(device) {
     });
 }
 
+function pausePlayer(device) {
+    return new Promise((resolve, reject) => {
+        device.pause((err, info) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(info);
+            }
+        });
+    });
+}
+
 function clearDropboxFolder(response) {
     response.entries.forEach((element) => {
-        log.info(element.name);
+        log.debug(`Removing ${element.name}`);
         const fileFullPath = {
             path: `${config.get('dropboxPath')}/${element.name}`,
         };
         dbx.filesDelete(fileFullPath);
     });
+}
+
+function getLastResponse(response) {
+    const lastElement = response.entries[response.entries.length - 1].name;
+    const lastElementCommandArray = lastElement.split('.');
+    const lastElementCommand = lastElementCommandArray[0];
+    const validCommands = ['play', 'pause'];
+
+    if (validCommands.indexOf(lastElementCommand) > -1) {
+        return lastElementCommand;
+    }
+    return 'ignore';
 }
 
 const sonosSearch = sonos.search();
@@ -55,28 +79,50 @@ sonosSearch.on('DeviceAvailable', (device) => {
         });
 });
 
-// TODO: Check for play or pause as the filenames so that the player will start or pause correctly.
 const schedule = cron.scheduleJob(config.get('schedule'), () => {
     dbx.filesListFolder({ path: config.get('dropboxPath') })
         .then((response) => {
             if (response.entries.length > 0) {
-                deviceList.forEach((device) => {
-                    startPlaying(device)
-                        .then((info) => {
-                            log.info(info);
-                        })
-                        .catch((err) => {
-                            log.error(err);
-                        });
-                });
+                const sonosActivity = getLastResponse(response);
 
+                switch (sonosActivity) {
+                case 'play':
+                    deviceList.forEach((device) => {
+                        startPlayer(device)
+                            .then((info) => {
+                                log.debug('Playing');
+                                log.debug(info);
+                            })
+                            .catch((err) => {
+                                log.error('Play failed');
+                                log.error(err);
+                            });
+                    });
+                    break;
+
+                case 'pause':
+                    deviceList.forEach((device) => {
+                        pausePlayer(device)
+                            .then((info) => {
+                                log.info('Paused');
+                                log.info(info);
+                            })
+                            .catch((err) => {
+                                log.error('Pause failed');
+                                log.error(err);
+                            });
+                    });
+                    break;
+
+                default:
+                }
                 clearDropboxFolder(response);
             } else {
-                log.info('No files in folder');
+                log.debug('No files in folder');
             }
         })
         .catch((error) => {
-            log.warn(error.error);
+            log.warn(error);
             schedule.cancel();
         });
 });

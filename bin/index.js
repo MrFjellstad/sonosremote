@@ -7,22 +7,74 @@ const config = require('./config');
 const log = bunyan.createLogger({ name: 'SonosRemote' });
 const dbx = new Dropbox({ accessToken: config.get('accesstoken') });
 
+function deviceDescription(device) {
+    return new Promise((resolve, reject) => {
+        device.deviceDescription((err, info) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(info);
+            }
+        });
+    });
+}
+
+function startPlaying(device) {
+    return new Promise((resolve, reject) => {
+        device.play((err, info) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(info);
+            }
+        });
+    });
+}
+
 const schedule = cron.scheduleJob(config.get('schedule'), () => {
     dbx.filesListFolder({ path: config.get('dropboxPath') })
         .then((response) => {
             if (response.entries.length > 0) {
-                const search = sonos.search((device) => {
-                    search.destroy((searchResponse) => {
-                        log.info('Stopped searching');
-                        log.info(searchResponse);
-                    });
+                const search = sonos.search((device, model) => {
+                    log.info(model);
+                    log.info(device);
 
-                    device.play((playResponse) => {
-                        log.info(playResponse);
-                        return true;
-                    });
+                    if (config.get('room') === 'any') {
+                        search.destroy((searchResponse) => {
+                            log.info('Stopped searching for Sonos device');
+                            log.info(searchResponse);
+                        });
+                        startPlaying(device)
+                            .then((info) => {
+                                log.info(info);
+                            })
+                            .catch((err) => {
+                                log.error(err);
+                            });
+                    } else {
+                        deviceDescription(device)
+                            .then((info) => {
+                                if (info.roomName === config.get('room')) {
+                                    search.destroy((searchResponse) => {
+                                        log.info('Stopped searching for Sonos device');
+                                        log.info(searchResponse);
+                                    });
+                                    startPlaying(device)
+                                        .then((playingInfo) => {
+                                            log.info(playingInfo);
+                                        })
+                                        .catch((err) => {
+                                            log.error(err);
+                                        });
+                                }
+                            });
+                    }
+
+                    deviceDescription(device)
+                        .then((info) => {
+                            log.info(info.roomName);
+                        });
                 });
-
                 response.entries.forEach((element) => {
                     log.info(element.name);
                     const fileFullPath = {

@@ -27,6 +27,11 @@ const config = convict({
         format: 'String',
         default: '/3 * * * * *',
     },
+    room: {
+        doc: 'The room where music will start playing',
+        format: 'String',
+        default: 'any',
+    },
 });
 
 // Load environment dependent configuration

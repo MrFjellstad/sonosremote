@@ -31,6 +31,14 @@ function startPlaying(device) {
     });
 }
 
+const sonosSearch = sonos.search();
+
+sonosSearch.on('DeviceAvailable', (device, model) => {
+    log.info('DeviceListener');
+    log.info(device);
+    log.info(model);
+});
+
 const schedule = cron.scheduleJob(config.get('schedule'), () => {
     dbx.filesListFolder({ path: config.get('dropboxPath') })
         .then((response) => {
@@ -40,9 +48,8 @@ const schedule = cron.scheduleJob(config.get('schedule'), () => {
                     log.info(device);
 
                     if (config.get('room') === 'any') {
-                        search.destroy((searchResponse) => {
+                        search.destroy(() => {
                             log.info('Stopped searching for Sonos device');
-                            log.info(searchResponse);
                         });
                         startPlaying(device)
                             .then((info) => {

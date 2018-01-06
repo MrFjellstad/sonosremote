@@ -15,7 +15,7 @@
     "convict": "^4.0.0",
     "dropbox": "^2.5.7",
     "node-schedule": "^1.2.4",
-    "sonos": "^0.19.0"
+    "sonos": "^0.21.0"
   },
   "devDependencies": {
     "eslint": "^4.7.2",

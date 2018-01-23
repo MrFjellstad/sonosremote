@@ -13,7 +13,7 @@
   "dependencies": {
     "bunyan": "^1.8.12",
     "convict": "^4.0.0",
-    "dropbox": "^2.5.7",
+    "dropbox": "^3.0.0",
     "node-schedule": "^1.2.4",
     "sonos": "^0.21.0"
   },

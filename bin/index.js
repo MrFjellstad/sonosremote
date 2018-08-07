@@ -1,5 +1,6 @@
+require('isomorphic-fetch');
 const cron = require('node-schedule');
-const Dropbox = require('dropbox');
+const { Dropbox } = require('dropbox');
 const sonos = require('sonos');
 const bunyan = require('bunyan');
 const config = require('./config');
@@ -65,7 +66,7 @@ function getLastResponse(response) {
     return 'ignore';
 }
 
-const sonosSearch = sonos.search();
+const sonosSearch = sonos.Search();
 const deviceList = [];
 
 sonosSearch.on('DeviceAvailable', (device) => {

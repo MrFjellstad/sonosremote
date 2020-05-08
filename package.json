@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "bunyan": "^1.8.12",
-    "convict": "^5.0.0",
+    "convict": "^6.0.0",
     "dropbox": "^4.0.9",
     "isomorphic-fetch": "^2.2.1",
     "node-schedule": "^1.2.4",

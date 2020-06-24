@@ -11,7 +11,7 @@
   "author": "Kent Fjellstad",
   "license": "ISC",
   "dependencies": {
-    "bunyan": "^1.8.12",
+    "bunyan": "^1.8.13",
     "convict": "^5.0.0",
     "dropbox": "^4.0.9",
     "isomorphic-fetch": "^2.2.1",

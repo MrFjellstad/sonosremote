@@ -16,7 +16,7 @@
     "bunyan": "^1.8.14",
     "convict": "^6.0.0",
     "dropbox": "^4.0.9",
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "node-schedule": "^1.2.4",
     "snyk": "^1.316.1",
     "sonos": "^1.8.1"

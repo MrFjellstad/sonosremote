@@ -13,19 +13,19 @@
   "author": "Kent Fjellstad",
   "license": "ISC",
   "dependencies": {
-    "bunyan": "^1.8.14",
+    "bunyan": "^1.8.15",
     "convict": "^6.0.0",
-    "dropbox": "^4.0.9",
+    "dropbox": "^9.2.0",
     "isomorphic-fetch": "^3.0.0",
-    "node-schedule": "^1.2.4",
-    "snyk": "^1.425.4",
-    "sonos": "^1.8.1"
+    "node-schedule": "^2.0.0",
+    "snyk": "^1.467.0",
+    "sonos": "^1.14.0"
   },
   "devDependencies": {
-    "eslint": "^7.5.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0",
-    "tap": "^14.10.8"
+    "eslint": "^7.21.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "tap": "^14.11.0"
   },
   "snyk": true
 }

@@ -14,11 +14,11 @@
   "license": "ISC",
   "dependencies": {
     "bunyan": "^1.8.15",
-    "convict": "^6.0.0",
+    "convict": "^6.0.1",
     "dropbox": "^9.2.0",
     "isomorphic-fetch": "^3.0.0",
     "node-schedule": "^2.0.0",
-    "snyk": "^1.467.0",
+    "snyk": "^1.518.0",
     "sonos": "^1.14.1"
   },
   "devDependencies": {

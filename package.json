@@ -19,7 +19,7 @@
     "isomorphic-fetch": "^3.0.0",
     "node-schedule": "^2.0.0",
     "snyk": "^1.1297.3",
-    "sonos": "^1.14.1"
+    "sonos": "^1.14.2"
   },
   "devDependencies": {
     "eslint": "^8.9.0",

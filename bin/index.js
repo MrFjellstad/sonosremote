@@ -4,67 +4,16 @@ const { Dropbox } = require('dropbox');
 const sonos = require('sonos');
 const bunyan = require('bunyan');
 const config = require('./config');
+const {
+    deviceDescription,
+    startPlayer,
+    pausePlayer,
+    getLastResponse,
+    clearDropboxFolder,
+} = require('./utils');
 
 const log = bunyan.createLogger({ name: 'SonosRemote' });
 const dbx = new Dropbox({ accessToken: config.get('accesstoken') });
-
-function deviceDescription(device) {
-    return new Promise((resolve, reject) => {
-        device.deviceDescription((err, info) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(info);
-            }
-        });
-    });
-}
-
-function startPlayer(device) {
-    return new Promise((resolve, reject) => {
-        device.play((err, info) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(info);
-            }
-        });
-    });
-}
-
-function pausePlayer(device) {
-    return new Promise((resolve, reject) => {
-        device.pause((err, info) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(info);
-            }
-        });
-    });
-}
-
-function clearDropboxFolder(response) {
-    response.entries.forEach((element) => {
-        log.debug(`Removing ${element.name}`);
-        const fileFullPath = {
-            path: `${config.get('dropboxPath')}/${element.name}`,
-        };
-        dbx.filesDelete(fileFullPath);
-    });
-}
-
-function getLastResponse(response) {
-    const lastElement = response.entries[response.entries.length - 1].name;
-    const lastElementCommandArray = lastElement.split('.');
-    const lastElementCommand = lastElementCommandArray[0];
-    const validCommands = ['play', 'pause'];
-
-    if (validCommands.indexOf(lastElementCommand) > -1) {
-        return lastElementCommand;
-    }
-    return 'ignore';
-}
 
 const sonosSearch = sonos.Search();
 const deviceList = [];
@@ -117,7 +66,7 @@ const schedule = cron.scheduleJob(config.get('schedule'), () => {
 
                 default:
                 }
-                clearDropboxFolder(response);
+                clearDropboxFolder(dbx, config.get('dropboxPath'), response, log);
             } else {
                 log.debug('No files in folder');
             }
